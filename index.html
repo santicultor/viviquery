@@ -162,12 +162,12 @@
 
     <!-- 1. Detección -->
     <section class="screen on" id="s1" aria-live="polite">
-      <div class="for">Para: Vivi</div>
+      <div class="for">Para Vivi, con cariño</div>
       <div class="eyebrow"><span class="dot"></span>Alerta del sistema</div>
       <h1>Vivi, se detectó un comentario desatinado</h1>
       <div class="quote">
         “Aprendiste cosas que van a quedar obsoletas pronto.”
-        <small>Emitido por: Santiago · Contexto: Vivi contando que fue un año difícil</small>
+        <small>Emitido por: Santi · Contexto: Vivi contando que fue un año difícil</small>
       </div>
       <div class="meta">
         <div>Nivel de tacto<b>0 / 10</b></div>
@@ -205,7 +205,7 @@
         <li><div><span class="name">Excel</span><span class="sub">Lleva desde 1985 sobreviviendo a todo</span></div><span class="tag wait">En cola</span></li>
         <li><div><span class="name">Pensar en procesos</span><span class="sub">Ver un problema, entenderlo y mejorarlo</span></div><span class="tag wait">En cola</span></li>
         <li><div><span class="name">Sacar adelante un año difícil</span><span class="sub">Y aprender mientras tanto</span></div><span class="tag wait">En cola</span></li>
-        <li><div><span class="name">El comentario de Santiago</span><span class="sub">Emitido sin revisar</span></div><span class="tag wait">En cola</span></li>
+        <li><div><span class="name">El comentario de Santi</span><span class="sub">Emitido sin revisar</span></div><span class="tag wait">En cola</span></li>
       </ul>
       <div class="verdict" id="verdict"><b>Diagnóstico:</b> lo único obsoleto aquí era el comentario. Se recomienda descontinuarlo de inmediato.</div>
       <button class="btn primary" id="toNote" hidden>Ver mensaje del soporte técnico</button>
@@ -215,9 +215,10 @@
     <section class="screen" id="s4">
       <div class="eyebrow">Mensaje del soporte técnico (o sea, yo)</div>
       <div class="note">
-        <p>Ya en serio, Vivi: fue un comentario bobo y me quedé pensando en él.</p>
-        <p>Lo que aprendiste este año vale muchísimo, y la forma de pensar que te deja no se vence con ninguna herramienta nueva. Perdón por responder con una opinión que nadie pidió.</p>
-        <p class="sig">— Santiago</p>
+        <p>Ya en serio, fue un comentario bobo.</p>
+        <p>Me estabas contando algo importante y te salí con eso. Perdón.</p>
+        <p>Lo que aprendiste este año vale un montón, y esa forma de pensar que te dejó no te la quita ninguna herramienta nueva. Me alegra mucho verte crecer así.</p>
+        <p class="sig">— Santi</p>
       </div>
       <button class="btn primary" id="toCoffee">Ok, ok… ¿y ahora qué?</button>
     </section>
@@ -232,10 +233,10 @@
           Café de compensación
         </div>
         <div class="req-b">
-          <div class="row"><span>Solicitante</span><span>Santiago</span></div>
+          <div class="row"><span>Solicitante</span><span>Santi</span></div>
           <div class="row"><span>Aprobadora</span><span>Vivi</span></div>
-          <div class="row"><span>Paga</span><span>Santiago</span></div>
-          <div class="row"><span>Acompañamiento</span><span>Lo que tú quieras</span></div>
+          <div class="row"><span>Paga</span><span>Santi</span></div>
+          <div class="row"><span>Acompañamiento</span><span>Lo que se te antoje</span></div>
           <div class="row"><span>Prioridad</span><span>Alta</span></div>
         </div>
       </div>
@@ -257,9 +258,9 @@
         <div class="row"><span>Ticket</span><span>#0001</span></div>
         <div class="row"><span>A nombre de</span><span>Vivi</span></div>
         <div class="row"><span>Válido hasta</span><span>No vence</span></div>
-        <div class="row"><span>Cobrar a</span><span>Santiago</span></div>
+        <div class="row"><span>Cobrar a</span><span>Santi</span></div>
       </div>
-      <p class="fine">A diferencia de ciertos comentarios, este ticket no queda obsoleto.<br>Para reclamarlo, mándale un pantallazo a Santiago.</p>
+      <p class="fine">A diferencia de ciertos comentarios, este ticket no queda obsoleto.<br>Para reclamarlo, mándale un pantallazo a Santi y cuadramos el día.</p>
       <button class="link" id="restart">Ver de nuevo</button>
     </section>
 
@@ -282,7 +283,7 @@
   /* ---------- 2. Deshacer ---------- */
   var steps = [
     [8,  'Localizando el comentario…', 'buscando comentario.tmp'],
-    [23, 'Buscando el tacto de Santiago…', 'tacto.exe: no encontrado', true],
+    [23, 'Buscando el tacto de Santi…', 'tacto.exe: no encontrado', true],
     [41, 'Descargando sentido común (3,2 GB)…', 'conexión lenta, reintentando'],
     [58, 'Consultando a Excel…', '=SI(comentario="bobo"; "deshacer"; "deshacer")'],
     [76, 'Preparando una disculpa decente…', 'disculpa_v1.docx guardado'],
