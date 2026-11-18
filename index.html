@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EEF2FA">
+<title>Para Vivi · Deshacer comentario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF2FA; --card:#FFFFFF; --ink:#1B2233; --muted:#4A5672; --line:#DCE2EE;
+    --blue:#2557D6; --blue-soft:#DCE6FB; --green:#1E7B4F; --green-soft:#E3F3EA;
+    --red:#B42318; --red-soft:#FDECEA; --amber:#9A5B00; --amber-soft:#FFF3DC;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  body{
+    font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg);
+    background-image:radial-gradient(circle at 1px 1px, rgba(37,87,214,.10) 1px, transparent 0);
+    background-size:22px 22px;
+    display:flex;align-items:center;justify-content:center;
+    padding:max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    min-height:100vh;min-height:100dvh;
+    -webkit-tap-highlight-color:transparent;
+  }
+  button{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+  .for{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--blue);background:var(--blue-soft);border-radius:99px;padding:6px 12px;margin-bottom:16px}
+  .wrap{width:100%;max-width:460px}
+  .card{
+    background:var(--card);border-radius:20px;border:1px solid var(--line);
+    box-shadow:0 10px 30px rgba(27,34,51,.08);padding:28px 24px;position:relative;overflow:hidden;
+  }
+  .screen{display:none;animation:in .35s ease}
+  .screen.on{display:block}
+  @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .eyebrow{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .dot{width:8px;height:8px;border-radius:99px;background:var(--red);box-shadow:0 0 0 4px var(--red-soft)}
+  h1,h2{font-family:'Space Grotesk',Inter,sans-serif;margin:0 0 10px;line-height:1.15}
+  h1{font-size:26px} h2{font-size:22px}
+  p{margin:0 0 14px;line-height:1.55;color:var(--muted);font-size:15px}
+  .quote{
+    background:#F6F8FC;border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:16px 0;
+    font-size:17px;line-height:1.45;color:var(--ink);font-weight:500;position:relative;
+  }
+  .quote small{display:block;margin-top:8px;font-size:12px;color:var(--muted);font-weight:500}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 20px}
+  .meta div{background:#F6F8FC;border-radius:12px;padding:10px 12px;font-size:12px;color:var(--muted)}
+  .meta b{display:block;font-size:15px;color:var(--ink);margin-top:2px}
+  .btn{
+    appearance:none;border:none;border-radius:999px;min-height:50px;padding:0 24px;font:600 16px Inter,sans-serif;
+    cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;
+    transition:transform .12s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn:active{transform:scale(.98)}
+  .btn:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+  .primary{background:var(--blue);color:#fff;box-shadow:0 6px 16px rgba(37,87,214,.28)}
+  .primary:hover{background:#1E49B5}
+  .ok{background:var(--green);color:#fff;box-shadow:0 6px 16px rgba(30,123,79,.28)}
+  .ok:hover{background:#17663F}
+  .ghost{background:#fff;color:var(--red);border:1.5px solid #E7B4AE}
+  kbd{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(255,255,255,.18);border-radius:6px;padding:2px 6px}
+
+  /* progress */
+  .bar{height:14px;border-radius:99px;background:#E6EBF5;overflow:hidden;margin:18px 0 10px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),#4F7DF0);border-radius:99px;transition:width .5s ease}
+  .pct{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:500;color:var(--ink)}
+  .status{min-height:46px;font-size:15px;color:var(--muted);line-height:1.45}
+  .log{font-family:'JetBrains Mono',monospace;font-size:12px;color:#5C6680;background:#F6F8FC;border-radius:12px;padding:12px;min-height:110px;margin-top:8px;line-height:1.7}
+  .log .x{color:var(--red)}
+
+  /* error dialog */
+  .err{border:1.5px solid #E7B4AE;background:var(--red-soft);border-radius:16px;padding:18px;margin:6px 0 18px;animation:shake .45s ease}
+  .err h2{color:var(--red);font-size:19px;display:flex;align-items:center;gap:8px}
+  .err code{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--red);opacity:.85}
+  .err p{color:#5A2620;margin:8px 0 0}
+  @keyframes shake{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+  /* scanner */
+  .scan{list-style:none;margin:16px 0 18px;padding:0;display:flex;flex-direction:column;gap:10px}
+  .scan li{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:#fff;
+    opacity:.35;transition:opacity .3s, border-color .3s, background .3s;
+  }
+  .scan li.seen{opacity:1}
+  .scan .name{font-weight:600;font-size:15px;color:var(--ink)}
+  .scan .sub{display:block;font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}
+  .tag{flex-shrink:0;font-size:12px;font-weight:600;border-radius:99px;padding:5px 10px;white-space:nowrap}
+  .tag.wait{background:#EEF2FA;color:#5C6680}
+  .tag.scanning{background:var(--blue-soft);color:var(--blue)}
+  .tag.good{background:var(--green-soft);color:var(--green)}
+  .tag.bad{background:var(--red);color:#fff}
+  .scan li.obsolete{border-color:#E7B4AE;background:var(--red-soft);animation:shake .5s ease}
+  .scan li.obsolete .name{text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px}
+  .verdict{display:none;background:var(--amber-soft);border-radius:14px;padding:14px 16px;margin-bottom:18px;font-size:15px;line-height:1.5;color:#5C3A00}
+  .verdict.on{display:block;animation:in .4s ease}
+  .verdict b{color:#3D2600}
+
+  /* note */
+  .note{font-size:17px;line-height:1.6;color:var(--ink);margin:6px 0 20px}
+  .note p{color:var(--ink);font-size:17px}
+  .sig{font-weight:600;margin-top:4px}
+
+  /* approval */
+  .req{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:14px 0 18px}
+  .req-h{background:var(--blue);color:#fff;padding:12px 16px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px}
+  .req-b{padding:6px 16px 10px}
+  .row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #EEF1F7;font-size:14px}
+  .row:last-child{border-bottom:none}
+  .row span:first-child{color:var(--muted)}
+  .row span:last-child{font-weight:600;text-align:right}
+  .arena{position:relative;height:150px}
+  .arena .btn{position:absolute;width:auto;min-width:140px}
+  #approve{left:0;top:0;width:calc(50% - 6px)}
+  #reject{right:0;top:0;transition:left .18s ease, top .18s ease, transform .18s ease}
+  .hint{font-size:12px;color:var(--muted);text-align:center;min-height:18px;margin-top:4px}
+
+  /* done */
+  .big-check{width:72px;height:72px;border-radius:99px;background:var(--green);display:flex;align-items:center;justify-content:center;margin:4px auto 16px;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+  @keyframes pop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+  .center{text-align:center}
+  .ticket{border:1.5px dashed #9FB3DE;border-radius:14px;padding:14px 16px;margin:18px 0;text-align:left;font-size:14px;background:#F8FAFF}
+  .ticket .row span:first-child{color:var(--muted)}
+  .fine{font-size:12px;color:var(--muted);margin-top:10px}
+  .link{background:none;border:none;color:var(--blue);font:600 14px Inter,sans-serif;cursor:pointer;padding:10px;margin-top:6px}
+  .link:hover{text-decoration:underline}
+
+  canvas#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:10}
+
+  /* celular */
+  @media (max-width: 520px){
+    body{align-items:flex-start;padding-top:max(16px, env(safe-area-inset-top));padding-left:max(12px, env(safe-area-inset-left));padding-right:max(12px, env(safe-area-inset-right))}
+    .card{padding:22px 18px;border-radius:18px}
+    h1{font-size:23px} h2{font-size:20px}
+    .quote{font-size:16px;padding:14px 15px}
+    .btn{min-height:54px;font-size:16px}
+    kbd{display:none}
+    .pct{font-size:24px}
+    .log{min-height:96px;font-size:11.5px}
+    .scan li{padding:11px 12px}
+    .scan .name{font-size:14.5px}
+    .tag{font-size:11.5px;padding:5px 9px}
+    .note,.note p{font-size:16px}
+    .arena{height:180px}
+    .arena .btn{min-width:0}
+    #approve{width:calc(50% - 6px)}
+    #reject{width:calc(50% - 6px)}
+  }
+  @media (max-width: 360px){
+    .meta{grid-template-columns:1fr}
+    .row{font-size:13px}
+  }
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<main class="wrap">
+  <div class="card">
+
+    <!-- 1. Detección -->
+    <section class="screen on" id="s1" aria-live="polite">
+      <div class="for">Para: Vivi</div>
+      <div class="eyebrow"><span class="dot"></span>Alerta del sistema</div>
+      <h1>Vivi, se detectó un comentario desatinado</h1>
+      <div class="quote">
+        “Aprendiste cosas que van a quedar obsoletas pronto.”
+        <small>Emitido por: Santiago · Contexto: Vivi contando que fue un año difícil</small>
+      </div>
+      <div class="meta">
+        <div>Nivel de tacto<b>0 / 10</b></div>
+        <div>¿Alguien lo pidió?<b>No</b></div>
+      </div>
+      <button class="btn primary" id="undoBtn">Deshacer comentario <kbd>Ctrl+Z</kbd></button>
+    </section>
+
+    <!-- 2. Intento de deshacer -->
+    <section class="screen" id="s2" aria-live="polite">
+      <div class="eyebrow">Deshaciendo comentario</div>
+      <div class="pct" id="pct">0%</div>
+      <div class="bar"><i id="barFill"></i></div>
+      <div class="status" id="status">Iniciando…</div>
+      <div class="log" id="log"></div>
+      <div id="errBox" hidden>
+        <div class="err" role="alert">
+          <h2>
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"></circle><path d="M12 7.5v5.5M12 16.5v.01"></path></svg>
+            No se pudo deshacer
+          </h2>
+          <code>Error 0xB0B0: comentario_dicho_en_voz_alta</code>
+          <p>Los comentarios que ya salieron de la boca no tienen Ctrl+Z. Sugerencia del sistema: compensar con evidencia.</p>
+        </div>
+        <button class="btn primary" id="scanBtn">Correr escáner de obsolescencia</button>
+      </div>
+    </section>
+
+    <!-- 3. Escáner -->
+    <section class="screen" id="s3" aria-live="polite">
+      <div class="eyebrow">Escáner de obsolescencia v1.0</div>
+      <h2>Revisando qué es lo que de verdad caduca en lo que aprendió Vivi</h2>
+      <ul class="scan" id="scanList">
+        <li><div><span class="name">Power Automate</span><span class="sub">Flujos que te ahorran horas de trabajo</span></div><span class="tag wait">En cola</span></li>
+        <li><div><span class="name">Excel</span><span class="sub">Lleva desde 1985 sobreviviendo a todo</span></div><span class="tag wait">En cola</span></li>
+        <li><div><span class="name">Pensar en procesos</span><span class="sub">Ver un problema, entenderlo y mejorarlo</span></div><span class="tag wait">En cola</span></li>
+        <li><div><span class="name">Sacar adelante un año difícil</span><span class="sub">Y aprender mientras tanto</span></div><span class="tag wait">En cola</span></li>
+        <li><div><span class="name">El comentario de Santiago</span><span class="sub">Emitido sin revisar</span></div><span class="tag wait">En cola</span></li>
+      </ul>
+      <div class="verdict" id="verdict"><b>Diagnóstico:</b> lo único obsoleto aquí era el comentario. Se recomienda descontinuarlo de inmediato.</div>
+      <button class="btn primary" id="toNote" hidden>Ver mensaje del soporte técnico</button>
+    </section>
+
+    <!-- 4. Mensaje -->
+    <section class="screen" id="s4">
+      <div class="eyebrow">Mensaje del soporte técnico (o sea, yo)</div>
+      <div class="note">
+        <p>Ya en serio, Vivi: fue un comentario bobo y me quedé pensando en él.</p>
+        <p>Lo que aprendiste este año vale muchísimo, y la forma de pensar que te deja no se vence con ninguna herramienta nueva. Perdón por responder con una opinión que nadie pidió.</p>
+        <p class="sig">— Santiago</p>
+      </div>
+      <button class="btn primary" id="toCoffee">Ok, ok… ¿y ahora qué?</button>
+    </section>
+
+    <!-- 5. Aprobación -->
+    <section class="screen" id="s5" aria-live="polite">
+      <div class="eyebrow">Acción pendiente</div>
+      <h2>Vivi, tienes una solicitud de aprobación</h2>
+      <div class="req">
+        <div class="req-h">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"></path><path d="M17 10.5h1.5a2.5 2.5 0 0 1 0 5H17"></path><path d="M8 3.5v2.5M12 3.5v2.5"></path></svg>
+          Café de compensación
+        </div>
+        <div class="req-b">
+          <div class="row"><span>Solicitante</span><span>Santiago</span></div>
+          <div class="row"><span>Aprobadora</span><span>Vivi</span></div>
+          <div class="row"><span>Paga</span><span>Santiago</span></div>
+          <div class="row"><span>Acompañamiento</span><span>Lo que tú quieras</span></div>
+          <div class="row"><span>Prioridad</span><span>Alta</span></div>
+        </div>
+      </div>
+      <div class="arena" id="arena">
+        <button class="btn ok" id="approve">Aprobar</button>
+        <button class="btn ghost" id="reject">Rechazar</button>
+      </div>
+      <div class="hint" id="hint"></div>
+    </section>
+
+    <!-- 6. Aprobado -->
+    <section class="screen center" id="s6" aria-live="polite">
+      <div class="big-check">
+        <svg aria-hidden="true" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+      </div>
+      <h1>Café aprobado</h1>
+      <p>El flujo terminó correctamente. Comentario obsoleto: eliminado.</p>
+      <div class="ticket">
+        <div class="row"><span>Ticket</span><span>#0001</span></div>
+        <div class="row"><span>A nombre de</span><span>Vivi</span></div>
+        <div class="row"><span>Válido hasta</span><span>No vence</span></div>
+        <div class="row"><span>Cobrar a</span><span>Santiago</span></div>
+      </div>
+      <p class="fine">A diferencia de ciertos comentarios, este ticket no queda obsoleto.<br>Para reclamarlo, mándale un pantallazo a Santiago.</p>
+      <button class="link" id="restart">Ver de nuevo</button>
+    </section>
+
+  </div>
+</main>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var timers = [];
+  function later(fn, ms){ var t = setTimeout(fn, reduce ? Math.min(ms, 150) : ms); timers.push(t); return t; }
+  function clearAll(){ timers.forEach(clearTimeout); timers = []; }
+  function $(id){ return document.getElementById(id); }
+  function show(id){
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('on'); });
+    $(id).classList.add('on');
+    window.scrollTo({top:0, behavior: reduce ? 'auto' : 'smooth'});
+  }
+
+  /* ---------- 2. Deshacer ---------- */
+  var steps = [
+    [8,  'Localizando el comentario…', 'buscando comentario.tmp'],
+    [23, 'Buscando el tacto de Santiago…', 'tacto.exe: no encontrado', true],
+    [41, 'Descargando sentido común (3,2 GB)…', 'conexión lenta, reintentando'],
+    [58, 'Consultando a Excel…', '=SI(comentario="bobo"; "deshacer"; "deshacer")'],
+    [76, 'Preparando una disculpa decente…', 'disculpa_v1.docx guardado'],
+    [93, 'Ya casi…', 'compilando arrepentimiento'],
+    [99, 'Atascado en 99%, como todo en la vida…', 'proceso no responde', true]
+  ];
+  $('undoBtn').addEventListener('click', function(){
+    show('s2');
+    $('log').innerHTML = ''; $('errBox').hidden = true;
+    $('barFill').style.width = '0%'; $('pct').textContent = '0%'; $('status').textContent = 'Iniciando…';
+    var t = 500;
+    steps.forEach(function(st){
+      later(function(){
+        $('barFill').style.width = st[0] + '%';
+        $('pct').textContent = st[0] + '%';
+        $('status').textContent = st[1];
+        var line = document.createElement('div');
+        line.textContent = '> ' + st[2];
+        if (st[3]) line.className = 'x';
+        $('log').appendChild(line);
+      }, t);
+      t += 1100;
+    });
+    later(function(){
+      $('status').textContent = 'Algo salió mal.';
+      $('errBox').hidden = false;
+    }, t + 1200);
+  });
+
+  /* ---------- 3. Escáner ---------- */
+  var results = [
+    ['good','Vigente'],
+    ['good','Vigente'],
+    ['good','No caduca'],
+    ['good','No caduca'],
+    ['bad','OBSOLETO']
+  ];
+  $('scanBtn').addEventListener('click', function(){
+    show('s3');
+    var items = document.querySelectorAll('#scanList li');
+    items.forEach(function(li){
+      li.className = '';
+      var tag = li.querySelector('.tag'); tag.className = 'tag wait'; tag.textContent = 'En cola';
+    });
+    $('verdict').classList.remove('on'); $('toNote').hidden = true;
+    var t = 400;
+    items.forEach(function(li, i){
+      var tag = li.querySelector('.tag');
+      later(function(){
+        li.classList.add('seen');
+        tag.className = 'tag scanning'; tag.textContent = 'Escaneando…';
+      }, t);
+      t += (i === items.length - 1) ? 1600 : 900;
+      later(function(){
+        tag.className = 'tag ' + results[i][0];
+        tag.textContent = results[i][1];
+        if (results[i][0] === 'bad') li.classList.add('obsolete');
+      }, t);
+      t += 250;
+    });
+    later(function(){
+      $('verdict').classList.add('on');
+      $('toNote').hidden = false;
+    }, t + 500);
+  });
+
+  $('toNote').addEventListener('click', function(){ show('s4'); });
+
+  /* ---------- 5. Aprobación ---------- */
+  var reject = $('reject'), arena = $('arena'), hint = $('hint');
+  var dodges = 0;
+  var lines = ['Rechazar','¿Segura?','Piénsalo bien','No hay escapatoria','Opción no disponible'];
+  var hints = ['','El botón de rechazar es tímido.','Sigue huyendo. Interesante.','Ese botón tiene más reflejos que yo para pensar antes de hablar.','Rechazo rechazado.'];
+  function resetReject(){
+    dodges = 0;
+    reject.textContent = 'Rechazar';
+    reject.className = 'btn ghost';
+    reject.style.left = ''; reject.style.right = '0px'; reject.style.top = '0px';
+    hint.textContent = '';
+  }
+  function dodge(e){
+    if (reject.dataset.converted === '1') return;
+    if (e) { e.preventDefault(); }
+    dodges++;
+    if (dodges >= lines.length) {
+      reject.dataset.converted = '1';
+      reject.textContent = 'Aprobar también';
+      reject.className = 'btn ok';
+      hint.textContent = 'Sistema actualizado: ahora hay dos formas de aprobar.';
+      return;
+    }
+    reject.textContent = lines[dodges];
+    hint.textContent = hints[dodges];
+    var aw = arena.clientWidth, ah = arena.clientHeight;
+    var bw = reject.offsetWidth, bh = reject.offsetHeight;
+    var approveBox = { w: $('approve').offsetWidth + 12, h: $('approve').offsetHeight + 12 };
+    var x, y, tries = 0;
+    do {
+      x = Math.random() * Math.max(0, aw - bw);
+      y = Math.random() * Math.max(0, ah - bh);
+      tries++;
+    } while (x < approveBox.w && y < approveBox.h && tries < 30);
+    reject.style.right = 'auto';
+    reject.style.left = x + 'px';
+    reject.style.top = y + 'px';
+  }
+  reject.addEventListener('mouseenter', function(){ dodge(); });
+  reject.addEventListener('touchstart', function(e){ if (reject.dataset.converted !== '1') dodge(e); }, {passive:false});
+  reject.addEventListener('click', function(e){
+    if (reject.dataset.converted === '1') { approve(); return; }
+    dodge(e);
+  });
+  reject.addEventListener('focus', function(){ if (reject.dataset.converted !== '1' && dodges === 0) hint.textContent = 'Puedes intentarlo, pero no te lo recomiendo.'; });
+
+  $('toCoffee').addEventListener('click', function(){
+    reject.dataset.converted = '0';
+    resetReject();
+    show('s5');
+  });
+
+  function approve(){ show('s6'); confetti(); }
+  $('approve').addEventListener('click', approve);
+
+  $('restart').addEventListener('click', function(){ clearAll(); show('s1'); });
+
+  /* ---------- Confeti ---------- */
+  function confetti(){
+    if (reduce) return;
+    var c = $('confetti'), ctx = c.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    c.width = innerWidth * dpr; c.height = innerHeight * dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    var colors = ['#2557D6','#1E7B4F','#F2B33D','#E8664A','#7C9BEA','#6FCF97'];
+    var parts = [];
+    for (var i = 0; i < 160; i++) {
+      parts.push({
+        x: innerWidth/2 + (Math.random()-.5)*80, y: innerHeight*0.35,
+        vx: (Math.random()-.5)*12, vy: -Math.random()*12 - 4,
+        w: 6 + Math.random()*6, h: 8 + Math.random()*8,
+        r: Math.random()*Math.PI, vr: (Math.random()-.5)*0.3,
+        c: colors[i % colors.length]
+      });
+    }
+    var start = performance.now();
+    (function frame(now){
+      var el = now - start;
+      ctx.clearRect(0,0,innerWidth,innerHeight);
+      parts.forEach(function(p){
+        p.vy += 0.32; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r);
+        ctx.globalAlpha = Math.max(0, 1 - el/3200);
+        ctx.fillStyle = p.c; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        ctx.restore();
+      });
+      if (el < 3200) requestAnimationFrame(frame); else ctx.clearRect(0,0,innerWidth,innerHeight);
+    })(start);
+  }
+})();
+</script>
+</body>
+</html>
